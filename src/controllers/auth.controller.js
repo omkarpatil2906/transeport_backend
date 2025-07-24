@@ -15,7 +15,7 @@ exports.loginCustomer = (req, res) => {
     if (!userName || !password) {
         return res.status(400).json({ error: { message: 'Username and password are required' } });
     }
-    const query = 'SELECT * FROM customers WHERE full_name = ?';
+    const query = 'SELECT * FROM customers WHERE user_name = ?';
     connection.query(query, [userName], async (err, results) => {
         if (err) {
             return res.status(500).json({ error: { message: 'Internal server error' } });
@@ -30,7 +30,7 @@ exports.loginCustomer = (req, res) => {
         }
         const payload = {
             id: user.id,
-            firstName: user.first_name,
+            fullName: user.full_name,
             email: user.email,
         };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
@@ -38,6 +38,7 @@ exports.loginCustomer = (req, res) => {
             result: {
                 message: 'Login successful',
                 token,
+                fullName: user.fullName
             }
         });
     });
